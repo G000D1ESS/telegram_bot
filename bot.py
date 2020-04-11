@@ -7,8 +7,12 @@ import config
 import re
 import random
 import time
-import qrcode 
+import qrcode
+import os
+import subprocess
 import speech_recognition as sr
+import soundfile as sf
+import urllib
 
 
 # Load Config
@@ -85,21 +89,48 @@ def send_rand_chance (update, context):
 
 # Voice 
 
-# Send Text from Voice
-def send_voice_to_txt (update, context):
-    try: 
-        AUDIO_FILE = update.effective_message.voice.get_file()
+def wav2text (dest_filename, file_name):
+    r = sr.Recognizer()
+    message = sr.AudioFile(dest_filename)
 
-        r = sr.Recognizer()
-        source =  sr.AudioFile(AUDIO_FILE)
-
-        audio = r.record(source)  # read the entire audio file
+    with message as source:
+        audio = r.record(source)
+    try:
         result = r.recognize_google(audio, language="ru-RU")
-        result.capitalize()
-        
-        update.effective_chat.send_message(text=f'[Сообщение]\n{result}')
-    except Exception:
-        update.effective_chat.send_message(text="Текст не распознан")
+        os.remove(dest_filename)
+        os.remove(file_name)
+        return format(result)
+
+    except sr.UnknownValueError:
+        os.remove(dest_filename)
+        os.remove(file_name)
+        return 'Не удалось распознать текст'
+
+def oga2wav (file_name):
+    src_filename = file_name
+    dest_filename = file_name + '.wav'
+    process = subprocess.run(['ffmpeg', '-i', src_filename, dest_filename])
+
+    return wav2text(dest_filename, file_name)
+
+def oga2text (url, file_id):
+    # Download .oga
+    urllib.request.urlretrieve(url, file_id + '.oga')
+    file_name = file_id + '.oga'
+
+    return oga2wav(file_name)
+
+# Send message from Voice.oga
+def send_text_from_voice (update, context):
+    
+    audio = update.effective_message.voice.get_file()
+
+    audio_PATH = audio['file_path']
+    audio_FILE_ID = audio['file_id']
+    
+    message = oga2text(url=audio_PATH, file_id=audio_FILE_ID)
+    update.effective_chat.send_message(text=message)
+
 
 # Handlers Obj
 start_handler = CommandHandler ('start', start)
@@ -107,7 +138,7 @@ send_user_name_handler = CommandHandler ('my_name', send_user_name)
 send_user_photot_handler = CommandHandler ('my_photo', send_user_photo)
 send_qr_code_handler = CommandHandler ('qr_code', send_qr_code)
 send_rand_chance_handler = MessageHandler (Filters.regex(r'\?'), send_rand_chance)
-send_voice_to_txt_handler = MessageHandler (Filters.voice, send_voice_to_txt)
+send_text_from_voice_handler = MessageHandler (Filters.voice, send_text_from_voice)
 
 # Add Handlers
 dispatcher.add_handler(start_handler)
@@ -115,7 +146,7 @@ dispatcher.add_handler(send_user_name_handler)
 dispatcher.add_handler(send_user_photot_handler)
 dispatcher.add_handler(send_qr_code_handler)
 dispatcher.add_handler(send_rand_chance_handler)
-dispatcher.add_handler(send_voice_to_txt_handler)
+dispatcher.add_handler(send_text_from_voice_handler)
 
 
 # Start Polling
