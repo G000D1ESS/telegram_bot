@@ -128,7 +128,7 @@ def send_text_from_voice (update, context):
     audio_FILE_ID = audio['file_id']
     
     message = oga2text(url=audio_PATH, file_id=audio_FILE_ID)
-    update.effective_chat.send_message(text=message)
+    update.effective_chat.send_message(text=message.capitalize())
 
 
 # Handlers Obj
