@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 
 
-from telegram.ext import Updater, CommandHandler
+from telegram.ext import Updater, CommandHandler, MessageHandler
+from telegram.ext.filters import Filters
 import config
+import random
 import qrcode 
 
 
@@ -16,6 +18,8 @@ dispatcher = updater.dispatcher
 
 
 # Main Bot Functions
+
+# Commands 
 
 # /start - Fist message, when user start bot
 def start (update, context):
@@ -50,12 +54,22 @@ def send_qr_code (update, context):
     else: 
         update.effective_user.send_message('/qr_code "Осутсвует информация"\nВведите информацию которую нужно преобразовать в QR код')
 
+# Messages
+
+# ...[?] - Send random Chance
+def send_rand_chance (update, context):
+
+    random.seed(update.effective_chat.id)
+    CHANCE = random.randint(0, 100)
+    update.effective_chat.send_message(f'Вероятность события {CHANCE}%')
+
 
 # Handlers Obj
-start_handler = CommandHandler('start', start)
-send_user_name_handler = CommandHandler('my_name', send_user_name)
-send_user_photot_handler = CommandHandler('my_photo', send_user_photo)
-send_qr_code_handler = CommandHandler('qr_code', send_qr_code)
+start_handler = CommandHandler ('start', start)
+send_user_name_handler = CommandHandler ('my_name', send_user_name)
+send_user_photot_handler = CommandHandler ('my_photo', send_user_photo)
+send_qr_code_handler = CommandHandler ('qr_code', send_qr_code)
+send_rand_chance_handler = MessageHandler (Filters.regex(r'*\?'), send_rand_chance)
 
 
 # Add Handlers
@@ -63,8 +77,8 @@ dispatcher.add_handler(start_handler)
 dispatcher.add_handler(send_user_name_handler)
 dispatcher.add_handler(send_user_photot_handler)
 dispatcher.add_handler(send_qr_code_handler)
+dispatcher.add_handler(send_rand_chance_handler)
 
-# NEW INFO
 
 # Start Polling
 updater.start_polling(poll_interval=5.0)
