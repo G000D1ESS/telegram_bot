@@ -6,7 +6,9 @@ from telegram.ext.filters import Filters, BaseFilter
 import config
 import re
 import random
+import time
 import qrcode 
+
 
 
 # Load Config
@@ -60,7 +62,7 @@ def send_qr_code (update, context):
 # ...[?] - Send random Chance
 def send_rand_chance (update, context):
 
-    random.seed(update.effective_chat.id)
+    random.seed(random.seed(time.time()))
     CHANCE = random.randint(0, 100)
     update.effective_chat.send_message(f'Вероятность события {CHANCE}%')
 
