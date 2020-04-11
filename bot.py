@@ -11,7 +11,6 @@ import qrcode
 import os
 import subprocess
 import speech_recognition as sr
-import soundfile as sf
 import urllib
 
 
