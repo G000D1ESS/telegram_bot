@@ -108,7 +108,7 @@ def wav2text (dest_filename, file_name):
 def oga2wav (file_name):
     src_filename = file_name
     dest_filename = file_name + '.wav'
-    process = subprocess.run(['ffmpeg', '-i', src_filename, dest_filename])
+    process = subprocess.run(['ffmpeg','-loglevel', 'quiet', '-i', src_filename, dest_filename])
 
     return wav2text(dest_filename, file_name)
 
