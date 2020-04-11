@@ -8,7 +8,7 @@ import re
 import random
 import time
 import qrcode 
-
+import speech_recognition as sr
 
 
 # Load Config
@@ -83,6 +83,23 @@ def send_rand_chance (update, context):
 
     update.effective_chat.send_message(answers[key])
 
+# Voice 
+
+# Send Text from Voice
+def send_voice_to_txt (update, context):
+    try: 
+        AUDIO_FILE = update.effective_message.voice.get_file()
+
+        r = sr.Recognizer()
+        source =  sr.AudioFile(AUDIO_FILE)
+
+        audio = r.record(source)  # read the entire audio file
+        result = r.recognize_google(audio, language="ru-RU")
+        result.capitalize()
+        
+        update.effective_chat.send_message(text=f'[Сообщение]\n{result}')
+    except Exception:
+        update.effective_chat.send_message(text="Текст не распознан")
 
 # Handlers Obj
 start_handler = CommandHandler ('start', start)
@@ -90,7 +107,7 @@ send_user_name_handler = CommandHandler ('my_name', send_user_name)
 send_user_photot_handler = CommandHandler ('my_photo', send_user_photo)
 send_qr_code_handler = CommandHandler ('qr_code', send_qr_code)
 send_rand_chance_handler = MessageHandler (Filters.regex(r'\?'), send_rand_chance)
-
+send_voice_to_txt_handler = MessageHandler (Filters.voice, send_voice_to_txt)
 
 # Add Handlers
 dispatcher.add_handler(start_handler)
@@ -98,6 +115,7 @@ dispatcher.add_handler(send_user_name_handler)
 dispatcher.add_handler(send_user_photot_handler)
 dispatcher.add_handler(send_qr_code_handler)
 dispatcher.add_handler(send_rand_chance_handler)
+dispatcher.add_handler(send_voice_to_txt_handler)
 
 
 # Start Polling
