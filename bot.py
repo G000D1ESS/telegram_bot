@@ -2,8 +2,9 @@
 
 
 from telegram.ext import Updater, CommandHandler, MessageHandler
-from telegram.ext.filters import Filters
+from telegram.ext.filters import Filters, BaseFilter
 import config
+import re
 import random
 import qrcode 
 
@@ -69,7 +70,7 @@ start_handler = CommandHandler ('start', start)
 send_user_name_handler = CommandHandler ('my_name', send_user_name)
 send_user_photot_handler = CommandHandler ('my_photo', send_user_photo)
 send_qr_code_handler = CommandHandler ('qr_code', send_qr_code)
-send_rand_chance_handler = MessageHandler (Filters.regex(r'*\?'), send_rand_chance)
+send_rand_chance_handler = MessageHandler (Filters.regex(r'\?'), send_rand_chance)
 
 
 # Add Handlers
