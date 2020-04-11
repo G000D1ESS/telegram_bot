@@ -64,6 +64,7 @@ dispatcher.add_handler(send_user_name_handler)
 dispatcher.add_handler(send_user_photot_handler)
 dispatcher.add_handler(send_qr_code_handler)
 
+# NEW INFO
 
 # Start Polling
 updater.start_polling(poll_interval=5.0)
