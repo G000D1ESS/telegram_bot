@@ -63,8 +63,25 @@ def send_qr_code (update, context):
 def send_rand_chance (update, context):
 
     random.seed(random.seed(time.time()))
-    CHANCE = random.randint(0, 100)
-    update.effective_chat.send_message(f'Вероятность события {CHANCE}%')
+    chance = random.randint(0, 100)
+
+    answers = [
+        "Нет",
+        "Скорее нет, чем да",
+        "Скорее да, чем нет",
+        "Да"
+    ]
+
+    if chance < 40:
+        key = 0
+    elif chance < 50:
+        key = 1
+    elif chance < 60:
+        key = 2
+    else:
+        key = 3
+
+    update.effective_chat.send_message(answers[key])
 
 
 # Handlers Obj
