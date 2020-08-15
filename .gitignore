@@ -3,3 +3,4 @@ config.py
 .vscode
 *.png
 *.jpg
+*.oga
